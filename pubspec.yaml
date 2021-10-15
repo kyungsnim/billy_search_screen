@@ -17,6 +17,7 @@ dependencies:
   dio: ^4.0.0
   substring_highlight: ^1.0.33    # 글자에 하이라이트 넣기
   intl: ^0.17.0                   # 숫자 단위 넣기
+  webview_flutter: ^2.1.1
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

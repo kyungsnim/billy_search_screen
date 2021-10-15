@@ -1,3 +1,4 @@
+import 'package:billy_search_screen/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 /// font size
@@ -29,3 +30,9 @@ TextStyle eventItemPriceTextStyle =
 TextStyle(color: Colors.black, fontSize: eventItemPriceFontSize, fontWeight: FontWeight.bold);
 TextStyle eventItemRateTextStyle =
 TextStyle(color: Colors.white, fontSize: eventItemRateFontSize, fontWeight: FontWeight.bold);
+
+TextStyle moreInfoTextStyle =
+TextStyle(color: baseColor, fontSize: smallFontSize, fontWeight: FontWeight.bold);
+
+TextStyle noEventItemTextStyle =
+TextStyle(color: unUsableColor, fontSize: smallFontSize,);
