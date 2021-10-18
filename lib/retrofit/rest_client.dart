@@ -9,7 +9,7 @@ abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   @GET('/tag/search?q={searchText}&per_page=8')
-  Future<List<RelatedSearchDatas>> getRelatedSearchDatas(
+  Future<List<RelatedSearchDatas>>? getRelatedSearchDatas(
       {@Path() required String searchText});
 
   @GET('/tag/data?search={searchText}&per_page=6')

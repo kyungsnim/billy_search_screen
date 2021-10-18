@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 /// font size
 double largeFontSize = 24;
-double mediumFontSize = 18;
-double smallFontSize = 16;
-double eventItemBrandFontSize = 12;
-double eventItemTitleFontSize = 14;
-double eventItemPriceFontSize = 14;
-double eventItemRateFontSize = 14;
+double mediumFontSize = 16;
+double smallFontSize = 14;
+double eventItemBrandFontSize = 11;
+double eventItemTitleFontSize = 12;
+double eventItemPriceFontSize = 12;
+double eventItemRateFontSize = 12;
 
 
 /// text style
@@ -23,7 +23,7 @@ TextStyle smallTextStyle =
     TextStyle(color: Colors.grey.withOpacity(0.8), fontSize: smallFontSize);
 
 TextStyle eventItemBrandTextStyle =
-    TextStyle(color: Colors.black87, fontSize: eventItemBrandFontSize);
+    TextStyle(color: Colors.black87, fontSize: eventItemBrandFontSize, fontWeight: FontWeight.bold);
 TextStyle eventItemTitleTextStyle =
 TextStyle(color: Colors.black87, fontSize: eventItemTitleFontSize);
 TextStyle eventItemPriceTextStyle =

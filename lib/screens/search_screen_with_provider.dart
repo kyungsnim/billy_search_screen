@@ -1,70 +1,60 @@
+import 'package:billy_search_screen/providers/search_provider.dart';
 import 'package:billy_search_screen/retrofit/rest_client.dart';
 import 'package:billy_search_screen/utils/utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 
 import 'content_webview_screen.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchScreenWithProvider extends StatefulWidget {
+  const SearchScreenWithProvider({Key? key}) : super(key: key);
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  State<SearchScreenWithProvider> createState() =>
+      _SearchScreenWithProviderState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
-  final TextEditingController _searchTextController = TextEditingController();
+class _SearchScreenWithProviderState extends State<SearchScreenWithProvider> {
   final FocusNode _focusNode = FocusNode();
   String _searchText = '';
-  RestClient? client;
   bool _searchComplete = false;
-
-  _SearchScreenState() {
-    _searchTextController.addListener(() {
-      setState(() {
-        _searchText = _searchTextController.text;
-      });
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    Dio dio = Dio();
-    dio.options.headers['Content-type'] = 'application/json';
-    dio.options.headers['authorization'] =
-        'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImZjYjAwNGE2OTEyNDUzN2U4MGYwZDllNzVhODFmYjI3ODVkZWUzYjljOTY5OGFiZjU4ZWM1YTVjYjI2ZWMyZWRjMTBmM2NlMjYxYTdjZjQwIn0.eyJhdWQiOiIzIiwianRpIjoiZmNiMDA0YTY5MTI0NTM3ZTgwZjBkOWU3NWE4MWZiMjc4NWRlZTNiOWM5Njk4YWJmNThlYzVhNWNiMjZlYzJlZGMxMGYzY2UyNjFhN2NmNDAiLCJpYXQiOjE2MzQxMzAyNjksIm5iZiI6MTYzNDEzMDI2OSwiZXhwIjoxNjY1NjY2MjY5LCJzdWIiOiIxMDg4MzIiLCJzY29wZXMiOltdfQ.ilrAkzRppNfe8s1nPUu4ONzLDkfZq_jJ47Uk3dArcVkMQ_7Hta2S_l28CFqvfMqh8pXl7Gfqhwnxv05_1_JpKOid8wQzdRcn6006tDUb8nd5PbBr2cUyjV1v-WS0KPtIj53YnBM_p0IYEEyxXcAUJnAzjeNCqW4RioFOvLzCqcCfYa2FYXHGRwXNw515rbuR3SUbM6oQM4TfZ-xSkE-tviycy0S2rrKmUQsjjq1OCuU5TGWR6rAzcsv90XVwbtJTTiHQpBvADmA_vPoALz0m0X-1SOrAcsc9FkmzzRb6tm1nzmQU99LkjZbtOMHhieONMEjONJj89NZHfGH1XIOiqROzjg4q1qVPYBu2BNAZVnq2GgVneFacgYarxSGWZKq0Y8UDrUgmfbEMLLKujJdqKb5Qkk_W2S_UHlxofh9QZP0mEjXKzT3rOtad0XcgsQV00d9v6ohnOQU0L2Guopj4mdMTRqE_pVu0EspUYzHgjHxPcsw3iQAjrYMTaueKUm9CBvED2ZMihYQjs0kiPEIbTr_Cgnb0EsuBH0kUW5QC5s2oV5erkWUFXC60CAjsz85yyvWWJ1Tri8IgqkpOHtem2l9deLnSNt7SwaF6sO_iWW7r1dbRaDAfpE06RpzKWq1GvlI1G5abbr1Xq0stYy991wCdMFc_-aT_7Sn4XiUePRo';
-
-    client = RestClient(dio);
-  }
+  SearchProvider? _searchProvider;
 
   @override
   Widget build(BuildContext context) {
+    _searchProvider = Provider.of<SearchProvider>(context);
+    _searchProvider!.searchTextController.addListener(() {
+      _searchText = _searchProvider!.searchTextController.text;
+    });
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              /// Safe Area
-              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+        body: Consumer<SearchProvider>(builder: (context, provider, widget) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                /// Safe Area
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
 
-              /// 검색창
-              searchBar(),
-              Text(_focusNode.hasFocus.toString()),
-              Text(_searchComplete.toString()),
-              /// 검색어 입력이 없을 때와 입력이 있을 때 화면 분기처리
-              _focusNode.hasFocus
-                  ? _relatedSearchTextBody()
-                  : _searchComplete
-                      ? _postAndEventSearchBody()
-                      : Container(),
-            ],
-          ),
-        ));
+                /// 검색창
+                searchBar(),
+
+                /// 검색어 입력이 없을 때와 입력이 있을 때 화면 분기처리
+                _focusNode.hasFocus
+                    ? _relatedSearchTextBody()
+                    : _searchComplete
+                        ? _postAndEventSearchBody()
+                        : Container(),
+                // _relatedSearchTextBody(),
+                // _postAndEventSearchBody()
+              ],
+            ),
+          );
+        }));
   }
 
   searchBar() {
@@ -88,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 /// 연관검색어 화면에서 검색 결과 화면으로 변경
                 _focusNode.unfocus();
                 _searchComplete = true;
-                _searchTextController.text = text;
+                _searchProvider!.searchTextController.text = text;
               },
               focusNode: _focusNode,
               style: TextStyle(
@@ -96,7 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               autofocus: true,
               cursorHeight: largeFontSize,
-              controller: _searchTextController,
+              controller: _searchProvider!.searchTextController,
               cursorColor: baseColor,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(0),
@@ -121,16 +111,17 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _relatedSearchTextBody() {
     return FutureBuilder(
-        future: client!.getRelatedSearchDatas(searchText: _searchText),
+        future: _searchProvider!.getRelatedSearchDatas(_searchText),
         builder: (_, AsyncSnapshot snapshot) {
           /// 데이터 불러오는 동안은 빈 화면 보여주기
-          if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-            return const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Color(0xFFf0d6c5)),
-            );
+          if (!snapshot.hasData) {
+            return Container();
           }
 
-          List<RelatedSearchDatas> relatedSearchDataList = snapshot.data;
+          if (snapshot.connectionState == ConnectionState.done) {
+            //  || !snapshot.hasData
+            _searchProvider!.setRelatedSearchData(snapshot.data);
+          }
 
           /// 검색창과 연관검색어 공백 없애기
           return MediaQuery.removePadding(
@@ -138,10 +129,10 @@ class _SearchScreenState extends State<SearchScreen> {
             removeTop: true, // 최상단 공백 제거
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: relatedSearchDataList.length,
+              itemCount: _searchProvider!.relatedSearchData.length,
               itemBuilder: (_, index) {
                 return relatedSearchTextItem(
-                    text: relatedSearchDataList[index].name!);
+                    text: _searchProvider!.relatedSearchData[index].name!);
               },
             ),
           );
@@ -153,8 +144,10 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () async {
         /// 연관검색어 화면에서 검색 결과 화면으로 변경
         _focusNode.unfocus();
-        _searchComplete = true;
-        _searchTextController.text = text;
+        setState(() {
+          _searchComplete = true;
+        });
+        _searchProvider!.searchTextController.text = text;
       },
       child: Padding(
         padding: const EdgeInsets.only(top: 30.0),
@@ -210,12 +203,18 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _postSearchBody() {
     return FutureBuilder(
-        future: client!.getSearchResultData(searchText: _searchText),
+        future: _searchProvider!.getSearchResultData(_searchText),
         builder: (_, AsyncSnapshot snapshot) {
           /// 데이터 불러오는 동안은 빈 화면 보여주기
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (!snapshot.hasData) {
+            //  ||
             return progressIndicator(
                 height: MediaQuery.of(context).size.height * 0.8);
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            //  || !snapshot.hasData
+            _searchProvider!.setRelatedSearchData(snapshot.data.data);
           }
 
           Data data = Data.fromJson(snapshot.data.data);
@@ -391,3 +390,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
+
+// class SearchScreenWithProvider extends StatefulWidget {
+//   const SearchScreenWithProvider({Key? key}) : super(key: key);
+//
+//   @override
+//   _SearchScreenWithProviderState createState() => _SearchScreenWithProviderState();
+// }
+//
+// class _SearchScreenWithProviderState extends State<SearchScreenWithProvider> {
+//
+// }

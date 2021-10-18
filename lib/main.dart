@@ -1,5 +1,7 @@
-import 'package:billy_search_screen/screens/search_screen.dart';
+import 'package:billy_search_screen/providers/search_provider.dart';
+import 'package:billy_search_screen/screens/screens.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +19,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SearchScreen(),
+      home: MultiProvider(providers: [
+        ChangeNotifierProvider(
+          create: (BuildContext context) => SearchProvider(),
+        ),
+      ], child: const SearchScreenWithProvider()),
     );
   }
 }
